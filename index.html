@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group 2 Research Survey</title>
+    <link href="https://rawcdn.githack.com/teaphrog/research-STM-DGSTest/40c631012ff1c5a7bc8d8c5e446f52ec75d1324a/main-web/output.css" rel="stylesheet">
+</head>
+
+<script type="text/javascript"> // Transitions
+
+    async function disappear(id) {
+      document.getElementById(id).classList.toggle('disappear');
+      
+  }
+    async function appear(id) {
+      document.getElementById(id).classList.toggle('appear');
+      
+  }
+
+    async function setInitPos(id) {
+      document.getElementById(id).classList.toggle('setInitPos');
+      
+  }
+
+    async function removeAppear(id) {
+        document.getElementById(id).classList.remove('appear');
+        
+    }
+
+    async function removeSetInitPos(id) {
+        document.getElementById(id).classList.remove('setInitPos');
+    }
+</script>
+
+<body class="bg-gray-100">
+  
+  <form id="form"></form>
+  <form id="testAnswerSubmit"></form>
+  <div id="clickArea" class="memTestHide overflow-auto" onclick="hideTestResult()"></div>
+    <div id="formContainer2" class="formWindow active items-center h-full w-full">     
+      <div class="w-full bg-white rounded-xl shadow-lg p-8 m-4 md:mx-5 border" style="">
+        <div id="testTitle" class="flex flex-wrap justify-center setInitOpacity appear">
+          <h1 class="w-full text-center text-4xl text-grey-darkest font-comfortaa font-medium">Short-Term Memory Test<br>(Modified Digit Span Test)</h1>
+        </div>
+        <div id="testContainer" class="flex h-full w-full testMargin">
+          <div id="memTestHome" class="grid justify-center h-full w-full">
+            <div id="testDesc" class="setInitTestDescPos appear">
+              <h2 class="text-center text-grey-darkest font-semibold mb-4 text-lg">How many numbers can you remember?</h2>
+            </div>
+            <div id="startTest" class="flex w-full justify-center setInitOpacity appear">
+              <button id="startBtn" class="px-3 py-1 rounded-lg mx-auto border hover:bg-slate-200 text-xl shadow" type="button">Start Test</button>
+            </div>
+          </div>
+          <div id="memTestMain" class="memTestHide w-full justify-center">
+            <div id="timerContainer" class="flex flex-wrap justify-center text-center" style="">
+              <h1 id="numberSpanDisplay" class="font-comfortaa text-6xl text-center mb-6 w-full" 
+              style=    
+              "
+              word-break: break-word;
+              overflow-wrap:break-word;
+              -webkit-touch-callout: none;
+              -webkit-user-select: none;
+              -khtml-user-select: none;
+              -moz-user-select: none;
+              -ms-user-select: none;
+              user-select: none;"></h1>
+              <g id="timer" class="timer memTestHide justify-center">
+                <svg width="160" height="60" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                  <line x1="40" x2="120" y1="10" y2="10" stroke="#DBDBDB" stroke-width="8"/>
+                  <path
+                    id="timerPath"
+                    stroke-dasharray="80"
+                    class="timerRemainingPath"
+                    stroke="#B2B2B2"
+                    d="
+                      M 40, 10
+                      L 120, 10
+                    "
+                  ></path>
+                </svg>
+              </g>
+            </div>
+          </div>
+          <div id="memTestAnswer" class="memTestHide w-full justify-center">
+              <label for="testAnswer" class="font-comfortaa text-2xl text-center mb-4">What was the number?</label>
+              <input form="testAnswerSubmit" class="border-2 border-slate-200 rounded-md py-3 px-2 text-center focus:outline-slate-300 font-comfortaa text-xl mb-4" type="number" id="testAnswer" name="testAnswer" autocomplete="off"/>
+              <input class="px-3 py-1 rounded-lg mx-auto border hover:bg-slate-200 text-xl shadow" form="testAnswerSubmit" id="answerSubmit" type="submit"></input>
+          </div>       
+          <div id="memTestAnswerResult" class="memTestHide w-full justify-center text-center">
+            
+            <h1 class="font-comfortaa text-2xl text-center mb-3" id="answerResult">insertResultHere</h1>
+            <h2 class="font-comfortaa text-lg text-center mb-2">Correct Answer: 
+              <br><br>
+              <span class="w-full text-center text-6xl text-grey-darkest font-comfortaa " id="answerCorrect"></span>
+            </h2>
+            <p class="mb-1">Your Answer: <span id="answerCurrent"></span></p>
+            <p class="mb-4">Score: <span id="scoreCount"></span></p>
+            <div id="clickNotif">
+            <h1 class="font-comfortaa text-2xl text-center mb-3 text-gray-200" 
+            style=    
+            "-webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;">
+            Click Anywhere to Continue</h1>
+            </div>
+            <input form="form" id="finalScore" name="Score" autocomplete="off"  hidden />
+            <div><button class="memTestHide px-3 py-1 rounded-lg mx-auto border hover:bg-slate-200" type="submit" id="submit" form="form">Finish</button></div>
+          </div>
+      </div>
+        <div class="float-right"><p class="py-1 text-right text-grey-darkest">(3/3)</p></div>
+    </div>
+  <!--</div>-->
+
+</body>
+
+<script>// Buttons | Onclick Transition Callback | Page Change Actions
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbz9Ko8r2NjmIEGMlw2o0R9IwnVAGScHNjpdexfzQP8Y3cw2r5H3bOv2tFS0fAsrwW6O/exec'
+    const form = document.querySelector('#form')
+    const answerForm = document.getElementById('testAnswerSubmit')
+    const answerGet = document.getElementById('testAnswer')
+    const formSubmitBtn = document.getElementById('submit')
+    const answerSubmit= document.getElementById('answerSubmit')
+    const nextBtn0 = document.querySelectorAll('.nextBtn0')
+    const nextBtn1 = document.querySelectorAll('.nextBtn1')
+    const startBtn = document.querySelector('#startBtn')
+    const formWindows = Array.from(document.querySelectorAll('.formWindow'))
+    const active = document.querySelector('.formWindow.active')
+    var answerCurrent
+    var index = formWindows.indexOf(active)
+    var indexAnim = index + 1
+    //console.log(formWindows);
+
+    //startBtn.disabled = true
+    formSubmitBtn.disabled = true
+
+    function setConsentDisagree(){
+      document.getElementById("default-radio-2").value="I Disagree"
+    }
+
+    function setConsentAgree(){
+      document.getElementById("default-radio-1").value="I Agree"
+      document.getElementById("default-radio-2").value=""
+    }
+
+    function textOpacityAnim(id){
+      if(document.getElementById(id).classList.contains('active')){
+        setTimeout(() => document.getElementById('testTitle').classList.toggle('appear'), 1200)
+        setTimeout(() => document.getElementById('testDesc').classList.toggle('appear'), 1600)
+        setTimeout(() => document.getElementById('startTest').classList.toggle('appear'), 2000)
+        setTimeout(() => document.getElementById("numberSpanDisplay").innerHTML, 2000)
+        setTimeout(() => startBtn.disabled = false, 2000)
+        setTimeout(() => document.getElementById('formContainer2').classList.toggle('setInitPos'), 3000)
+        setTimeout(() => document.getElementById('formContainer2').classList.toggle('appear'), 3001)
+      }      
+    }
+
+    function toggle_visibility(id){
+      document.getElementById(id).classList.toggle('active')
+    }
+
+    function hideTestResult(){
+      document.getElementById('clickArea').classList.toggle('clickArea')
+      //document.getElementById('clickNotif').classList.toggle('block')
+      //document.getElementById('clickNotif').classList.toggle('appear')
+      document.getElementById('memTestAnswerResult').classList.toggle('memTestAppear')
+      setTimeout(() => document.getElementById('memTestMain').classList.toggle('memTestAppear'), 410)
+      setTimeout(() => document.getElementById('timer').classList.toggle('memTestAppear'), 690)
+      setTimeout(() => startTimerMeasure(), 590)     
+      answerSubmit.disabled = false
+    }
+
+    function disappearFinal(id){
+      document.getElementById(id).classList.add('disappearTest')
+    }
+
+    function startNextPageAnim(){
+      removeAppear('formContainer' + index)
+      disappear('formContainer'+ index)
+        .then(() => setTimeout(() => toggle_visibility('formContainer' + index), 310))
+        .then(() => setTimeout(() => nextForm('next'), 310))
+        .then(() => removeSetInitPos('formContainer'+ index))
+        .then(() => setInitPos('formContainer'+ indexAnim))
+        .then(() => toggle_visibility('formContainer'+ indexAnim))
+        .then(() => setTimeout(() => appear('formContainer'+ indexAnim), 310))
+        .then(() => textOpacityAnim('formContainer2'))
+      indexAnim = index + 1
+    }
+
+    nextBtn0.forEach(button => {
+      button.addEventListener('click', (e) => {
+        if(
+          document.getElementById("default-radio-2").value == "I Disagree" ||
+          document.getElementById("default-radio-1").value == "" 
+        ){
+          alert('Please Select "I Agree" to Continue.')
+          document.getElementById("default-radio-2").value=""
+        } else{
+          startNextPageAnim()
+        }
+
+      })
+    });
+
+    nextBtn1.forEach(button => {
+      button.addEventListener('click', (e) => {
+        startNextPageAnim()
+      })
+    });
+
+    startBtn.addEventListener('click', (e) => {
+      document.getElementById('memTestHome').classList.toggle('disappearTest')
+      setTimeout(() => document.getElementById('memTestHome').classList.toggle('memTestHide'), 310)
+      setTimeout(() => document.getElementById('memTestMain').classList.toggle('memTestAppear'), 410)
+      setTimeout(() => document.getElementById('numberSpanDisplay').innerHTML = numberDisplay, 690)
+      setTimeout(() => document.getElementById('timer').classList.toggle('memTestAppear'), 690)
+      setTimeout(() => startTimerMeasure(), 590)
+    })
+
+
+    answerForm.addEventListener('submit', (e) =>{
+      e.preventDefault()
+      answerSubmit.disabled = true
+      var answerCurrentLocal = new FormData(answerForm)
+      answerCurrent = answerCurrentLocal.get('testAnswer')
+      answerChecking()
+      document.getElementById('memTestAnswer').classList.toggle('disappearTest')
+      document.getElementById('answerResult').innerHTML = answerResult
+      document.getElementById('scoreCount').innerHTML = score
+      document.getElementById('answerCorrect').innerHTML = answerCorrect
+      document.getElementById('answerCurrent').innerHTML = answerCurrent
+      setTimeout(() => document.getElementById('memTestAnswer').classList.toggle('memTestAppear'), 310)
+      setTimeout(() => document.getElementById('memTestAnswer').classList.toggle('disappearTest'), 310)
+      setTimeout(() => document.getElementById('memTestAnswerResult').classList.toggle('memTestAppear'), 410)
+      
+      //console.log(answerCurrent)
+    })
+
+
+    
+    form.addEventListener('submit', e => {
+      console.log("it work")
+      e.preventDefault()
+      formSubmitBtn.disabled = true
+      formSubmitBtn.innerHTML = "Loading..."
+      //console.log(form)
+      
+      fetch(scriptURL, { method: 'POST', body: new FormData(form) })
+        .then(response => { 
+          formSubmitBtn.disabled = false
+          formSubmitBtn.innerHTML = "Submit"
+            alert('Response Submitted! Thank you for answering the survey.', response)
+            
+            .then(() => setTimeout(() => toggle_visibility('formContainer2'), 310))
+          })
+        
+        .catch(error => {
+          formSubmitBtn.disabled = false
+          formSubmitBtn.innerHTML = "Done!"
+          disappearFinal('formContainer2')
+        })
+          
+    })
+</script>
+<script>// High res timer library
+  class Timer {
+  constructor () {
+    this.isRunning = false;
+    this.startTime = 0;
+    this.overallTime = 0;
+  }
+
+  _getTimeElapsedSinceLastStart () {
+    if (!this.startTime) {
+      return 0;
+    }
+  
+    return Date.now() - this.startTime;
+  }
+
+  start () {
+    if (this.isRunning) {
+      return console.error('Timer is already running');
+    }
+
+    this.isRunning = true;
+
+    this.startTime = Date.now();
+  }
+
+  stop () {
+    if (!this.isRunning) {
+      return console.error('Timer is already stopped');
+    }
+
+    this.isRunning = false;
+
+    this.overallTime = this.overallTime + this._getTimeElapsedSinceLastStart();
+  }
+
+  reset () {
+    this.overallTime = 0;
+
+    if (this.isRunning) {
+      this.startTime = Date.now();
+      return;
+    }
+
+    this.startTime = 0;
+  }
+
+  getTime () {
+    if (!this.startTime) {
+      return 0;
+    }
+
+    if (this.isRunning) {
+      return this.overallTime + this._getTimeElapsedSinceLastStart();
+    }
+
+    return this.overallTime;
+  }
+}
+  
+  
+  
+</script>
+<script>// Timer
+  var TIME_LIMIT = 2000;
+  var TIME_LIMIT_MULTIPLIER = 0;
+  var TIME_LIMIT_PREV = 0;
+  var TIMER_CAP = 0;
+  const FULL_DASH_ARRAY = 80;
+  const timer = new Timer();
+  let timeLeft = TIME_LIMIT;
+  let timerInterval = null;
+  
+
+
+
+  function startTimerMeasure() {
+    timer.start(); 
+    timerInterval = setInterval(() => {
+      let timePassed = Math.round(timer.getTime());
+      timeLeft = TIME_LIMIT - timePassed; 
+      setLineDasharray()
+      if(setLineDasharray('done')){
+        clearInterval(timerInterval)
+        setTimeout(() => timer.stop(), 0.5)  
+        setTimeout(() => document.getElementById('memTestMain').classList.toggle('memTestAppear'), 0.5)
+        setTimeout(() => document.getElementById('memTestAnswer').classList.toggle('memTestAppear'), 0.5)
+        setTimeout(() => document.getElementById('timer').classList.toggle('memTestAppear'), 0.5)
+        timer.reset()
+        timeLeft = TIME_LIMIT
+        setLineDasharray()
+      }
+    }, 1);//cpu benchmark(real)
+  }
+
+  // Divides time left by the defined time limit.
+  function calculateTimeFraction() {
+    const rawTimeFraction = timeLeft / TIME_LIMIT;
+    return rawTimeFraction;
+  }
+      
+  // Update the dasharray value as time passes, starting with 283
+  function setLineDasharray() {
+    const timeFractionCallback = calculateTimeFraction() * FULL_DASH_ARRAY
+    const lineDasharray = `${(calculateTimeFraction() * FULL_DASH_ARRAY).toFixed(0)} 80`;
+    document.getElementById("timerPath").setAttribute("stroke-dasharray", lineDasharray);
+    //console.log(calculateTimeFraction('rawTimeFraction'))
+    //console.log(lineDasharray)
+    if(timeFractionCallback <= 0){
+      return 'done'
+    }
+  }
+
+</script>
+<script>
+    var randNum = Math.floor(Math.random() * 10) //intial value in numberStorage
+    var numberStorage = [randNum] //numberStorage == is the Array
+    var numberDisplay = numberStorage.join('') //convert array values to string
+    var answerCorrect = numberDisplay //yes
+    var score = 0 //yes2
+    var digitCount = numberStorage.length //count number of values in array
+    var answerResult
+
+    
+  function answerChecking(){
+    if(answerCurrent == answerCorrect){
+      for(let i = 0; i < digitCount + 1; i++){
+          numberStorage[i] = Math.floor(Math.random() * 10)
+        }
+      answerResult = "Correct!!"
+      score += 1
+      digitCount += 1
+      numberDisplay = numberStorage.join('')
+      document.getElementById('numberSpanDisplay').innerHTML = numberDisplay
+      //setTimeout(() => document.getElementById('clickNotif').classList.toggle('block'), 410)
+      //setTimeout(() => document.getElementById('clickNotif').classList.toggle('appear'), 100)
+      setTimeout(() => document.getElementById('clickArea').classList.toggle('clickArea'), 100)
+      setTimeout(() => answerCorrect = numberDisplay, 100)
+      document.getElementById('testAnswer').value = ""
+      TIME_LIMIT_MULTIPLIER += 1
+      TIMER_CAP = TIME_LIMIT_MULTIPLIER
+      TIME_LIMIT_PREV = TIME_LIMIT
+      if(TIMER_CAP > 12){
+        TIME_LIMIT = 15000
+      } else {
+        TIME_LIMIT = (2000 * (1.7**((Math.log10(1.4)*(TIME_LIMIT_MULTIPLIER - 1)))))*(1.7**((Math.log10(1.4)*TIME_LIMIT_MULTIPLIER)))
+      }      
+      //console.log(TIME_LIMIT_MULTIPLIER)
+      console.log(TIME_LIMIT)
+      
+    } else {
+        answerResult = "Incorrect :("
+        formSubmitBtn.disabled = false
+        document.getElementById('clickNotif').classList.toggle('memTestHide')
+        document.getElementById('submit').classList.toggle('memTestAppear')
+    }
+      document.getElementById('finalScore').setAttribute('value', score)  
+      //console.log(numberDisplay)
+      //console.log(numberStorage)
+      console.log(score)
+      
+
+      
+  }
+
+</script>
+</html>
+
+
